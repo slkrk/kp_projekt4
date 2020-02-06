@@ -54,6 +54,7 @@ DMA_HandleTypeDef hdma_usart2_tx;
 
 /* USER CODE BEGIN PV */
 static volatile uint8_t uart_cmpl = 0;
+static volatile uint8_t uart_cmpl2 = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -474,7 +475,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
 	if (GPIO_Pin == GPIO_PIN_13)
 	{
-		if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_RESET)
+		if (HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin) == GPIO_PIN_SET)
 		{
 
 			char buff[30];
@@ -500,9 +501,9 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 				break;
 			}
 
-//			uart_cmpl = 0;
-			HAL_UART_Transmit(&huart2, (uint8_t*)buff, strlen(buff), 100);
-//			while (uart_cmpl == 0);
+			uart_cmpl2 = 0;
+			HAL_UART_Transmit_IT(&huart2, (uint8_t*)buff, strlen(buff));
+			while (uart_cmpl2 == 0);
 
 		}
 
@@ -534,6 +535,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 {
 	uart_cmpl = 1;
+	uart_cmpl2 = 1;
 }
 
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc)
